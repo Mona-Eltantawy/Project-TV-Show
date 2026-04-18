@@ -24,7 +24,7 @@ function setup() {
   
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
-  
+
   rootElem.innerHTML = "";
   //A header Element to contain searchbox element and a navigation bar for future navigation links
   const headerSectionEl = document.createElement("section");
@@ -33,16 +33,27 @@ function makePageForEpisodes(episodeList) {
   navBarEl.classList.add("nav-bar");
   headerSectionEl.appendChild(navBarEl);
 
-  const title = document.createElement("h2");
-  title.textContent = "Game of Thrones TV Episodes";
-  navBarEl.appendChild(title);
+  const navLinks = document.createElement("ul");
+  const logo = document.createElement("li");
+  logo.textContent = "Game of Thrones TV Episodes";
+  logo.classList.add("logo");
+  navLinks.appendChild(logo);
+
+  const counter = document.createElement("li");
+  counter.textContent = "counter place-holder";
+  counter.classList.add("counter");
+  navLinks.appendChild(counter);
+
+
 
   //SearchBox element appended as a child of header element
+  const searchEl = document.createElement("li")
   const searchBoxEl = document.createElement("input");
+  searchEl.appendChild(searchBoxEl);
   searchBoxEl.type = "search";
   searchBoxEl.placeholder = "Search episodes...";
-  searchBoxEl.classList.add("search-bar")
-  headerSectionEl.appendChild(searchBoxEl);
+  searchBoxEl.classList.add("search-bar");
+  navLinks.appendChild(searchBoxEl);
 
   //storing searchbox input value in state object
   searchBoxEl.value = state.searchTerm;
@@ -54,6 +65,8 @@ function makePageForEpisodes(episodeList) {
     const filteredEpisodes = handleSearchInput(query, state.episodes);
     renderEpisodes(filteredEpisodes);
   });
+  navBarEl.appendChild(navLinks);
+
   rootElem.appendChild(headerSectionEl);
 
   // credit
