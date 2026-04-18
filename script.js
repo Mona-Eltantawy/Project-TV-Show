@@ -5,8 +5,22 @@ let state = {
 };
 function setup() {
   const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+  state.episodes = allEpisodes;
+  makePageForEpisodes(state.episodes);
 }
+  //Function to filter Episode
+  function handleSearchInput(query, episodeList) {
+    const searchTerm = query.trim().toLowerCase();
+    if (searchTerm === "") {
+      return episodeList;
+    }
+
+    return episodeList.filter((episode) => {
+      const name = episode.name.toLowerCase();
+      const summary = episode.summary ? episode.summary.toLowerCase() : "";
+      return name.includes(searchTerm) || summary.includes(searchTerm);
+    });
+  }
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML = "";
@@ -30,10 +44,10 @@ function makePageForEpisodes(episodeList) {
    searchBoxEl.addEventListener("input", (event) => {
    const query = event.target.value;
    state.searchTerm = query;
-   const filteredEpisodes = handleSearchInput(query, episodes);
+   const filteredEpisodes = handleSearchInput(query, state.episodes);
    makePageForEpisodes(filteredEpisodes);
   });
-  rootElem.appendChild(searchBoxEl);
+  rootElem.appendChild(headerSectionEl);
 
   episodeList.forEach((episode) => {
     const card = document.createElement("section");
@@ -64,19 +78,7 @@ function makePageForEpisodes(episodeList) {
     rootElem.appendChild(card);
   });
 
-  //Function to filter Episode
-  function handleSearchInput(query, episodeList) {
-    const searchTerm = query.trim().toLowerCase();
-    if (searchTerm === "") {
-      return episodeList;
-    }
 
-    return episodeList.filter((episode) => {
-      const name = episode.name.toLowerCase();
-      const summary = episode.summary ? episode.summary.toLowerCase() : "";
-      return name.includes(searchTerm) || summary.includes(searchTerm);
-    });
-  }
   // credit
   const credit = document.createElement("p");
   credit.innerHTML = `
