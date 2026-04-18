@@ -2,6 +2,7 @@
 let state = {
   episodes: [],
   searchTerm: "",
+  counterEl: null,
 };
 function setup() {
   const allEpisodes = getAllEpisodes();
@@ -43,8 +44,7 @@ function makePageForEpisodes(episodeList) {
   counter.textContent = "counter place-holder";
   counter.classList.add("counter");
   navLinks.appendChild(counter);
-
-
+  state.counterEl = counter;
 
   //SearchBox element appended as a child of header element
   const searchEl = document.createElement("li")
@@ -79,7 +79,10 @@ function makePageForEpisodes(episodeList) {
   rootElem.appendChild(credit);
   renderEpisodes(episodeList);
 }
-
+//Displayed episode counter
+function updateCounter(filteredEpisodes, allEpisodes) {
+  state.counterEl.textContent = `Showing ${filteredEpisodes.length} of ${allEpisodes.length} episodes`;
+}
 function renderEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   const credit = document.getElementById("credit");
@@ -115,6 +118,7 @@ function renderEpisodes(episodeList) {
     card.append(title, details, image, summary);
     rootElem.insertBefore(card, credit);
   });
+  updateCounter(episodeList, state.episodes);
 }
 
 window.onload = setup;

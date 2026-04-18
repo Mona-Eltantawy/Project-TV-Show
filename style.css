@@ -1,6 +1,7 @@
 #root {
   color: red;
 }
+
 .header-section {
   width: 100%;
   background-color: blue;
@@ -24,4 +25,12 @@
   justify-content: space-between;
   align-items: center;
   list-style: none;
+}
+.nav-bar li:first-child {
+  margin-right: auto;
+  
+}
+.counter {
+  display: flex;
+  margin-right: 10px
 }
