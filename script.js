@@ -21,8 +21,10 @@ function setup() {
       return name.includes(searchTerm) || summary.includes(searchTerm);
     });
   }
+  
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
+  
   rootElem.innerHTML = "";
   //A header Element to contain searchbox element and a navigation bar for future navigation links
   const headerSectionEl = document.createElement("section");
@@ -31,33 +33,56 @@ function makePageForEpisodes(episodeList) {
   navBarEl.classList.add("nav-bar");
   headerSectionEl.appendChild(navBarEl);
 
+  const title = document.createElement("h2");
+  title.textContent = "Game of Thrones TV Episodes";
+  navBarEl.appendChild(title);
+
   //SearchBox element appended as a child of header element
   const searchBoxEl = document.createElement("input");
   searchBoxEl.type = "search";
   searchBoxEl.placeholder = "Search episodes...";
+  searchBoxEl.classList.add("search-bar")
   headerSectionEl.appendChild(searchBoxEl);
 
   //storing searchbox input value in state object
-   searchBoxEl.value = state.searchTerm;
+  searchBoxEl.value = state.searchTerm;
 
   //An event listener to to capture search event
-   searchBoxEl.addEventListener("input", (event) => {
-   const query = event.target.value;
-   state.searchTerm = query;
-   const filteredEpisodes = handleSearchInput(query, state.episodes);
-   makePageForEpisodes(filteredEpisodes);
+  searchBoxEl.addEventListener("input", (event) => {
+    const query = event.target.value;
+    state.searchTerm = query;
+    const filteredEpisodes = handleSearchInput(query, state.episodes);
+    renderEpisodes(filteredEpisodes);
   });
   rootElem.appendChild(headerSectionEl);
 
+  // credit
+  const credit = document.createElement("p");
+  credit.id = "credit";
+  credit.innerHTML = `
+    Data originally from 
+    <a href="https://tvmaze.com/" target="_blank">TVMaze.com</a>
+  `;
+  rootElem.appendChild(credit);
+  renderEpisodes(episodeList);
+}
+
+function renderEpisodes(episodeList) {
+  const rootElem = document.getElementById("root");
+  const credit = document.getElementById("credit");
+  // Remove old episode cards for re-rendering
+  const oldCards = rootElem.querySelectorAll(".episode-card");
+  oldCards.forEach((card) => card.remove());
+
   episodeList.forEach((episode) => {
     const card = document.createElement("section");
+    card.classList.add("episode-card"); 
 
     const season = String(episode.season).padStart(2, "0");
     const number = String(episode.number).padStart(2, "0");
     const episodeCode = `S${season}E${number}`;
 
     const title = document.createElement("h2");
-
     const link = document.createElement("a");
     link.href = episode.url;
     link.target = "_blank";
@@ -75,16 +100,10 @@ function makePageForEpisodes(episodeList) {
     summary.innerHTML = episode.summary;
 
     card.append(title, details, image, summary);
-    rootElem.appendChild(card);
+    rootElem.insertBefore(card, credit);
   });
-
-
-  // credit
-  const credit = document.createElement("p");
-  credit.innerHTML = `
-    Data originally from 
-    <a href="https://tvmaze.com/" target="_blank">TVMaze.com</a>
-  `;
-  rootElem.appendChild(credit);
 }
+
 window.onload = setup;
+
+
