@@ -2,7 +2,6 @@ function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
 }
-
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML = "";
@@ -10,28 +9,38 @@ function makePageForEpisodes(episodeList) {
   episodeList.forEach((episode) => {
     const card = document.createElement("section");
 
-    // Title
+    const season = String(episode.season).padStart(2, "0");
+    const number = String(episode.number).padStart(2, "0");
+    const episodeCode = `S${season}E${number}`;
+
     const title = document.createElement("h2");
-    title.textContent = `${episode.name} (${episode.season}x${episode.number})`;
 
-    // Image
+    const link = document.createElement("a");
+    link.href = episode.url;
+    link.target = "_blank";
+    link.textContent = `${episode.name} (${episodeCode})`;
+
+    title.appendChild(link);
+
+    const details = document.createElement("p");
+    details.textContent = `Season ${episode.season}, Episode ${episode.number}`;
+
     const image = document.createElement("img");
-    image.src = episode.image.medium;
+    image.src = episode.image?.medium || "";
 
-    // Summary
     const summary = document.createElement("p");
     summary.innerHTML = episode.summary;
 
-    // Append elements
-    card.append(title, image, summary);
+    card.append(title, details, image, summary);
     rootElem.appendChild(card);
   });
+
+  // credit
+  const credit = document.createElement("p");
+  credit.innerHTML = `
+    Data originally from 
+    <a href="https://tvmaze.com/" target="_blank">TVMaze.com</a>
+  `;
+  rootElem.appendChild(credit);
 }
-
-// Combine season number and episode number into an episode code:
-// Each part should be zero-padded to two digits.
-// Example: S02E07 would be the code for the 7th episode of the 2nd season. S2E7 would be incorrect.
-// Your page should state somewhere that the data has (originally) come from TVMaze.com, and link back to that site (or the specific episode on that site). See tvmaze.com/api#licensing.
-// Screenshot of minimal vers
-
 window.onload = setup;
