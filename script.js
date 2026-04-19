@@ -65,6 +65,13 @@ function makePageForEpisodes(episodeList) {
     const filteredEpisodes = handleSearchInput(query, state.episodes);
     renderEpisodes(filteredEpisodes);
   });
+
+  const selectEl = document.createElement("li");
+  const selectBoxEl = document.createElement("select");
+  selectEl.appendChild(selectBoxEl);
+  selectEl.classList.add("select-box");
+  navLinks.appendChild(selectEl)
+  
   navBarEl.appendChild(navLinks);
 
   rootElem.appendChild(headerSectionEl);
@@ -79,6 +86,7 @@ function makePageForEpisodes(episodeList) {
   rootElem.appendChild(credit);
   renderEpisodes(episodeList);
 }
+
 //Displayed episode counter
 function updateCounter(filteredEpisodes, allEpisodes) {
   state.counterEl.textContent = `Showing ${filteredEpisodes.length} of ${allEpisodes.length} episodes`;
