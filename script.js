@@ -2,6 +2,7 @@
 let state = {
   episodes: [],
   searchTerm: "",
+  selectedEpisode: "",
   counterEl: null,
 };
 const getAllEpisodes = async () => {
@@ -14,32 +15,45 @@ async function setup() {
   state.episodes = allEpisodes;
   makePageForEpisodes(state.episodes);
 }
-//Function to filter Episode
-function handleSearchInput(query, episodeList) {
+
+function handleSearchInput(query, episodeList, selectedEpisode) {
   const searchTerm = query.trim().toLowerCase();
-  if (searchTerm === "") {
-    return episodeList;
-  }
 
   return episodeList.filter((episode) => {
-    const name = episode.name.toLowerCase();
-    const summary = episode.summary ? episode.summary.toLowerCase() : "";
-    return name.includes(searchTerm) || summary.includes(searchTerm);
+  const name = episode.name.toLowerCase();
+  const summary = episode.summary ? episode.summary.toLowerCase() : "";
+
+  const matchesSearch =
+  searchTerm === "" ||
+  name.includes(searchTerm) ||
+  summary.includes(searchTerm);
+
+  const matchesSelect =
+  selectedEpisode === "" || episode.id.toString() === selectedEpisode;
+
+  return matchesSearch && matchesSelect;
   });
 }
-
+function updateViewOnFilter() {
+  const filteredEpisodes = handleSearchInput(
+    state.searchTerm,
+    state.episodes,
+    state.selectedEpisode,
+  );
+  renderEpisodes(filteredEpisodes);
+}
 function makePageForEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
+   const rootElem = document.getElementById("root");
 
   rootElem.innerHTML = "";
   //A header Element to contain searchbox element and a navigation bar for future navigation links
-  const headerSectionEl = document.createElement("section");
+   const headerSectionEl = document.createElement("section");
   headerSectionEl.classList.add("header-section");
-  const navBarEl = document.createElement("nav");
+   const navBarEl = document.createElement("nav");
   navBarEl.classList.add("nav-bar");
   headerSectionEl.appendChild(navBarEl);
 
-  const navLinks = document.createElement("ul");
+   const navLinks = document.createElement("ul");
   const logo = document.createElement("li");
   logo.textContent = "Game of Thrones TV Episodes";
   logo.classList.add("logo");
@@ -62,13 +76,9 @@ function makePageForEpisodes(episodeList) {
 
   //storing searchbox input value in state object
   searchBoxEl.value = state.searchTerm;
-
-  //An event listener to to capture search event
   searchBoxEl.addEventListener("input", (event) => {
-    const query = event.target.value;
-    state.searchTerm = query;
-    const filteredEpisodes = handleSearchInput(query, state.episodes);
-    renderEpisodes(filteredEpisodes);
+    state.searchTerm = event.target.value;
+    updateViewOnFilter();
   });
 
   const selectEl = document.createElement("li");
@@ -77,19 +87,31 @@ function makePageForEpisodes(episodeList) {
   selectEl.classList.add("select-box");
   navLinks.appendChild(selectEl);
 
-const displayOption = async () => {
-  const options = await getAllEpisodes();
+  const displayOption = async () => {
+    const options = await getAllEpisodes();
 
-  for (const option of options) {
-    const newOption = document.createElement("option");
-    newOption.value = option.id; 
-    newOption.textContent = option.name;
-    selectBoxEl.appendChild(newOption);
-  }
-};
+    // sort alphabetically
+    options.sort((a, b) => a.name.localeCompare(b.name));
 
-displayOption();
-  
+    // default option
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "All episodes";
+    selectBoxEl.appendChild(defaultOption);
+
+    for (const option of options) {
+      const newOption = document.createElement("option");
+      newOption.value = option.id;
+      newOption.textContent = option.name;
+      selectBoxEl.appendChild(newOption);
+    }
+  };
+
+  displayOption();
+  selectBoxEl.addEventListener("change", (event) => {
+    state.selectedEpisode = event.target.value;
+    updateViewOnFilter();
+  });
 
   navBarEl.appendChild(navLinks);
   rootElem.appendChild(headerSectionEl);
@@ -148,7 +170,6 @@ function renderEpisodes(episodeList) {
 }
 
 window.onload = setup;
-
 
 //   ## Adding new functionality
 
