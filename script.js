@@ -5,9 +5,12 @@ let state = {
   selectedEpisode: "",
   counterEl: null,
 };
+let episodesCache = null;
 const getAllEpisodes = async () => {
+  if (episodesCache) return episodesCache;
   const response = await fetch("https://api.tvmaze.com/shows");
   const data = await response.json();
+  episodesCache = data;
   return data;
 };
 async function setup() {
