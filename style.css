@@ -1,3 +1,37 @@
 #root {
   color: red;
 }
+
+.header-section {
+  width: 100%;
+  background-color: blue;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.search-bar {
+  width: 280px;
+  padding: 10px 14px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background-color: white;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.nav-bar ul {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+}
+.nav-bar li:first-child {
+  margin-right: auto;
+  
+}
+.counter {
+  display: flex;
+  margin-right: 10px
+}
