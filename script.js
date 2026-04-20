@@ -173,24 +173,3 @@ function renderEpisodes(episodeList) {
 }
 
 window.onload = setup;
-
-//   ## Adding new functionality
-
-// Level 400 is about expanding beyond one TV show.
-
-// Until now, your site has only showed information about the episode of one TV show.
-
-// But TVmaze has information about lots of TV shows, all in the same format.
-
-// We want to display any of them.
-
-// ### Requirements
-
-// 1. Add a `select` element to your page so the user can choose a show.
-// 2. When the user first loads the page, make a `fetch` request to https://api.tvmaze.com/shows ([documentation](https://www.tvmaze.com/api#show-index)) to get a list of available shows, and add an entry to the drop-down per show.
-// 3. When a user selects a show, display the episodes for that show, just like the earlier levels of this project.
-
-//   You will need to perform a `fetch` to get the episode list.
-// 4. Make sure that your search and episode selector controls still work correctly when you change shows.
-// 5. Your select must list shows in alphabetical order, case-insensitive.
-// 6. During one user's visit to your website, you should never fetch any URL more than once.
