@@ -1,3 +1,60 @@
-#root {
-  color: red;
+.episode-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+.episode-card {
+  background: rgb(38, 44, 74);
+  color: #111;
+  border-radius: 12px;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.episode-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+.episode-title {
+  margin: 0;
+  padding: 12px;
+
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  margin: 12px;
+  background: #b0acac;
+}
+.episode-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.episode-content {
+  padding: 12px 16px;
+}
+.episode-summary {
+  font-size: 16px;
+  line-height: 1.4;
+  color:white;
+}
+@media (max-width: 1000px) {
+  .episode-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .episode-section {
+    grid-template-columns: 1fr;
+  }
 }
