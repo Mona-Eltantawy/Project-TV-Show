@@ -1,28 +1,117 @@
 //State Management
 let state = {
+  shows: [],
+  selectedShowId: null,
   episodes: [],
   searchTerm: "",
   counterEl: null,
-  isLoading: true,
+  showSelectEl: null,
+  searchInputEl: null,
+  isLoadingShows: true,
+  isLoadingEpisodes: true,
   error: null,
+  cache: {
+    shows: null,
+    episodes: {},
+  },
 };
 
 async function setup() {
   makePageForEpisodes([]);
+
   try {
-    const response = await fetch("https://api.tvmaze.com/shows/82/episodes"); 
+    await loadShowList();
+    if (state.shows.length === 0) {
+      throw new Error("No shows were loaded");
+    }
+
+    const firstShow = state.shows[0];
+    state.selectedShowId = firstShow.id;
+    updateShowTitle(firstShow.name);
+    await loadEpisodesForShow(firstShow.id);
+  } catch (error) {
+    state.isLoadingShows = false;
+    state.isLoadingEpisodes = false;
+    state.error = error.message;
+    showError(error.message);
+  }
+}
+
+async function loadShowList() {
+  if (state.cache.shows) {
+    state.shows = state.cache.shows;
+    state.isLoadingShows = false;
+    populateShowSelect();
+    return;
+  }
+
+  const response = await fetch("https://api.tvmaze.com/shows");
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const shows = await response.json();
+  shows.sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+  );
+  state.cache.shows = shows;
+  state.shows = shows;
+  state.isLoadingShows = false;
+  populateShowSelect();
+}
+
+async function loadEpisodesForShow(showId) {
+  state.isLoadingEpisodes = true;
+  state.error = null;
+  renderEpisodes([]);
+
+  if (state.cache.episodes[showId]) {
+    state.episodes = state.cache.episodes[showId];
+    state.isLoadingEpisodes = false;
+    renderEpisodes(state.episodes);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.tvmaze.com/shows/${showId}/episodes`,
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
     const episodes = await response.json();
+    state.cache.episodes[showId] = episodes;
     state.episodes = episodes;
-    state.isLoading = false;
-    state.error = null;
+    state.isLoadingEpisodes = false;
     renderEpisodes(state.episodes);
   } catch (error) {
-    state.isLoading = false;
-    state.error = error.message;
-    showError(error.message);
+    state.isLoadingEpisodes = false;
+    throw error;
+  }
+}
+
+function updateShowTitle(name) {
+  const logo = document.querySelector(".logo");
+  if (logo) {
+    logo.textContent = `${name} Episodes`;
+  }
+}
+
+function populateShowSelect() {
+  if (!state.showSelectEl) return;
+  state.showSelectEl.innerHTML = "";
+
+  state.shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = show.name;
+    state.showSelectEl.appendChild(option);
+  });
+
+  state.showSelectEl.disabled = false;
+  if (state.selectedShowId) {
+    state.showSelectEl.value = state.selectedShowId;
   }
 }
 
@@ -76,7 +165,7 @@ function makePageForEpisodes(episodeList) {
 
   const navLinks = document.createElement("ul");
   const logo = document.createElement("li");
-  logo.textContent = "Game of Thrones TV Episodes";
+  logo.textContent = "TV Show Eplorer";
   logo.classList.add("logo");
   navLinks.appendChild(logo);
 
@@ -86,19 +175,51 @@ function makePageForEpisodes(episodeList) {
   navLinks.appendChild(counter);
   state.counterEl = counter;
 
-  //SearchBox element appended as a child of header element
+  const showSelectEl = document.createElement("select");
+  showSelectEl.id = "show-select";
+  showSelectEl.classList.add("show-select");
+  showSelectEl.disabled = true;
+  showSelectEl.innerHTML = "<option>Loading shows...</option>";
+  showSelectEl.addEventListener("change", async (event) => {
+    const showId = Number(event.target.value);
+    if (!showId || showId === state.selectedShowId) return;
+
+    state.selectedShowId = showId;
+    state.searchTerm = "";
+    if (state.searchInputEl) {
+      state.searchInputEl.value = "";
+    }
+
+    const selectedShow = state.shows.find((show) => show.id === showId);
+    if (selectedShow) {
+      updateShowTitle(selectedShow.name);
+    }
+
+    try {
+      await loadEpisodesForShow(showId);
+    } catch (error) {
+      state.error = error.message;
+      showError(error.message);
+    }
+  });
+
+  const showSelectItem = document.createElement("li");
+  showSelectItem.appendChild(showSelectEl);
+  navLinks.appendChild(showSelectItem);
+  state.showSelectEl = showSelectEl;
+
   const searchEl = document.createElement("li");
+  searchEl.classList.add("search-item");
   const searchBoxEl = document.createElement("input");
   searchEl.appendChild(searchBoxEl);
   searchBoxEl.type = "search";
   searchBoxEl.placeholder = "Search episodes...";
   searchBoxEl.classList.add("search-bar");
-  navLinks.appendChild(searchBoxEl);
+  navLinks.appendChild(searchEl);
 
-  //storing searchbox input value in state object
+  state.searchInputEl = searchBoxEl;
   searchBoxEl.value = state.searchTerm;
 
-  //An event listener to to capture search event
   searchBoxEl.addEventListener("input", (event) => {
     const query = event.target.value;
     state.searchTerm = query;
@@ -133,9 +254,11 @@ function renderEpisodes(episodeList) {
   if (oldSection) oldSection.remove();
   const oldLoading = document.getElementById("loading-message");
   if (oldLoading) oldLoading.remove();
+  const oldError = rootElem.querySelector("#error-message");
+  if (oldError) oldError.remove();
 
   // Show loading message if data is still being fetched
-  if (state.isLoading) {
+  if (state.isLoadingEpisodes) {
     const loadingElement = document.createElement("div");
     loadingElement.id = "loading-message";
     loadingElement.style.cssText = `
@@ -149,8 +272,12 @@ function renderEpisodes(episodeList) {
     return;
   }
 
+  if (state.error) {
+    return;
+  }
+
   // Show message if no episodes available
-  if (episodeList.length === 0 && !state.isLoading && !state.error) {
+  if (episodeList.length === 0 && !state.isLoadingEpisodes && !state.error) {
     const noDataElement = document.createElement("div");
     noDataElement.style.cssText = `
       text-align: center;
