@@ -13,7 +13,7 @@ function makePageForEpisodes(episodeList) {
 
   episodeList.forEach((episode) => {
     const card = document.createElement("article");
-    card.classList.add("episode-card"); // 🔥 FIX: needed for CSS styling
+    card.classList.add("episode-card"); // 🔥 
 
     // ---------- TITLE (boxed header style) ----------
     const season = String(episode.season).padStart(2, "0");
