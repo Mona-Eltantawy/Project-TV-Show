@@ -1,3 +1,86 @@
+/* ========== BODY & GENERAL ========== */
+body {
+  background-color: #0f1419;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ========== HEADER SECTION ========== */
+.header-section {
+  background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+  padding: 20px;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #b0acac;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-bar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #b0acac;
+  margin: 0;
+  padding: 0;
+  flex-grow: 1;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.counter {
+  font-size: 14px;
+  color: #ffffff;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(176, 172, 172, 0.2);
+  border-radius: 6px;
+  border: 1px solid #b0acac;
+}
+
+.search-bar {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: 2px solid #b0acac;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111;
+  width: 250px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #d4b5b5;
+  box-shadow: 0 0 12px rgba(176, 172, 172, 0.4);
+  background: #ffffff;
+}
+
+.search-bar::placeholder {
+  color: #999;
+}
+
+/* ========== EPISODE SECTION ========== */
 .episode-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -56,5 +139,66 @@
 @media (max-width: 650px) {
   .episode-section {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ========== CREDIT SECTION ========== */
+#credit {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  color: #999;
+  font-size: 14px;
+  border-top: 1px solid #b0acac;
+}
+
+#credit a {
+  color: #b0acac;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+#credit a:hover {
+  color: #d4b5b5;
+  text-decoration: underline;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 1200px) {
+  .nav-bar ul {
+    gap: 15px;
+  }
+
+  .search-bar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    padding: 15px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .nav-bar ul {
+    gap: 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .logo {
+    flex-grow: 0;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .counter {
+    text-align: center;
   }
 }

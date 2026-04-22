@@ -9,20 +9,20 @@ function setup() {
   state.episodes = allEpisodes;
   makePageForEpisodes(state.episodes);
 }
-  //Function to filter Episode
-  function handleSearchInput(query, episodeList) {
-    const searchTerm = query.trim().toLowerCase();
-    if (searchTerm === "") {
-      return episodeList;
-    }
-
-    return episodeList.filter((episode) => {
-      const name = episode.name.toLowerCase();
-      const summary = episode.summary ? episode.summary.toLowerCase() : "";
-      return name.includes(searchTerm) || summary.includes(searchTerm);
-    });
+//Function to filter Episode
+function handleSearchInput(query, episodeList) {
+  const searchTerm = query.trim().toLowerCase();
+  if (searchTerm === "") {
+    return episodeList;
   }
-  
+
+  return episodeList.filter((episode) => {
+    const name = episode.name.toLowerCase();
+    const summary = episode.summary ? episode.summary.toLowerCase() : "";
+    return name.includes(searchTerm) || summary.includes(searchTerm);
+  });
+}
+
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
 
@@ -47,7 +47,7 @@ function makePageForEpisodes(episodeList) {
   state.counterEl = counter;
 
   //SearchBox element appended as a child of header element
-  const searchEl = document.createElement("li")
+  const searchEl = document.createElement("li");
   const searchBoxEl = document.createElement("input");
   searchEl.appendChild(searchBoxEl);
   searchBoxEl.type = "search";
@@ -95,8 +95,8 @@ function renderEpisodes(episodeList) {
   section.classList.add("episode-section");
 
   episodeList.forEach((episode) => {
-    const card = document.createElement("section");
-    card.classList.add("episode-card"); 
+    const card = document.createElement("article");
+    card.classList.add("episode-card");
 
     // ---------- TITLE (boxed header style) ----------
     const season = String(episode.season).padStart(2, "0");
@@ -104,6 +104,7 @@ function renderEpisodes(episodeList) {
     const episodeCode = `S${season}E${number}`;
 
     const title = document.createElement("h2");
+    title.classList.add("episode-title");
     const link = document.createElement("a");
     link.href = episode.url;
     link.target = "_blank";
@@ -127,12 +128,14 @@ function renderEpisodes(episodeList) {
     summary.classList.add("episode-summary");
     summary.innerHTML = episode.summary;
 
-    card.append(title, details, image, summary);
-    rootElem.insertBefore(card, credit);
+    content.append(details, summary);
+
+    // ---------- BUILD CARD ----------
+    card.append(title, image, content);
+    section.appendChild(card);
   });
+  rootElem.insertBefore(section, credit);
   updateCounter(episodeList, state.episodes);
 }
 
 window.onload = setup;
-
-
