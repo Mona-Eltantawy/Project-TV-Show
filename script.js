@@ -3,12 +3,52 @@ let state = {
   episodes: [],
   searchTerm: "",
   counterEl: null,
+  isLoading: true,
+  error: null,
 };
-function setup() {
-  const allEpisodes = getAllEpisodes();
-  state.episodes = allEpisodes;
-  makePageForEpisodes(state.episodes);
+
+async function setup() {
+  makePageForEpisodes([]);
+  try {
+    const response = await fetch('https://api.tvmaze.com/shows/82/episodes');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const episodes = await response.json();
+    state.episodes = episodes;
+    state.isLoading = false;
+    state.error = null;
+    renderEpisodes(state.episodes);
+  } catch (error) {
+    state.isLoading = false;
+    state.error = error.message;
+    showError(error.message);
+  }
 }
+
+// Function to display error messages to the user
+function showError(message) {
+  const rootElem = document.getElementById("root");
+  const errorElement = document.createElement("div");
+  errorElement.id = "error-message";
+  errorElement.style.cssText = `
+    background-color: #8b3a3a;
+    color: #ffffff;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #d63031;
+    font-size: 16px;
+  `;
+  errorElement.textContent = `Error loading episodes: ${message}`;
+  const credit = document.getElementById("credit");
+  if (credit) {
+    rootElem.insertBefore(errorElement, credit);
+  } else {
+    rootElem.appendChild(errorElement);
+  }
+}
+
 //Function to filter Episode
 function handleSearchInput(query, episodeList) {
   const searchTerm = query.trim().toLowerCase();
@@ -89,6 +129,39 @@ function renderEpisodes(episodeList) {
   // Remove old episode cards for re-rendering
   const oldCards = rootElem.querySelectorAll(".episode-card");
   oldCards.forEach((card) => card.remove());
+  const oldSection = rootElem.querySelector(".episode-section");
+  if (oldSection) oldSection.remove();
+  const oldLoading = document.getElementById("loading-message");
+  if (oldLoading) oldLoading.remove();
+
+  // Show loading message if data is still being fetched
+  if (state.isLoading) {
+    const loadingElement = document.createElement("div");
+    loadingElement.id = "loading-message";
+    loadingElement.style.cssText = `
+      text-align: center;
+      padding: 40px 20px;
+      color: #b0acac;
+      font-size: 18px;
+    `;
+    loadingElement.textContent = "Loading episodes...";
+    rootElem.insertBefore(loadingElement, credit);
+    return;
+  }
+
+  // Show message if no episodes available
+  if (episodeList.length === 0 && !state.isLoading && !state.error) {
+    const noDataElement = document.createElement("div");
+    noDataElement.style.cssText = `
+      text-align: center;
+      padding: 40px 20px;
+      color: #b0acac;
+      font-size: 18px;
+    `;
+    noDataElement.textContent = "No episodes found";
+    rootElem.insertBefore(noDataElement, credit);
+    return;
+  }
 
   // 🔥 ADD GRID CONTAINER (important for CSS)
   const section = document.createElement("section");
