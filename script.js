@@ -90,10 +90,15 @@ function renderEpisodes(episodeList) {
   const oldCards = rootElem.querySelectorAll(".episode-card");
   oldCards.forEach((card) => card.remove());
 
+  // 🔥 ADD GRID CONTAINER (important for CSS)
+  const section = document.createElement("section");
+  section.classList.add("episode-section");
+
   episodeList.forEach((episode) => {
     const card = document.createElement("section");
     card.classList.add("episode-card"); 
 
+    // ---------- TITLE (boxed header style) ----------
     const season = String(episode.season).padStart(2, "0");
     const number = String(episode.number).padStart(2, "0");
     const episodeCode = `S${season}E${number}`;
@@ -102,17 +107,24 @@ function renderEpisodes(episodeList) {
     const link = document.createElement("a");
     link.href = episode.url;
     link.target = "_blank";
-    link.textContent = `${episode.name} (${episodeCode})`;
+    link.textContent = `${episode.name} - ${episodeCode}`;
 
     title.appendChild(link);
+
+    // ---------- IMAGE ----------
+    const image = document.createElement("img");
+    image.src = episode.image?.medium || "";
+    image.alt = episode.name;
+
+    // ---------- CONTENT WRAPPER ----------
+    const content = document.createElement("div");
+    content.classList.add("episode-content");
 
     const details = document.createElement("p");
     details.textContent = `Season ${episode.season}, Episode ${episode.number}`;
 
-    const image = document.createElement("img");
-    image.src = episode.image?.medium || "";
-
     const summary = document.createElement("p");
+    summary.classList.add("episode-summary");
     summary.innerHTML = episode.summary;
 
     card.append(title, details, image, summary);
